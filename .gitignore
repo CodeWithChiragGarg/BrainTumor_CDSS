@@ -25,6 +25,7 @@ backend/storage/vector_store/*
 !backend/storage/vector_store/.gitkeep
 ml/artifacts/classification/*
 !ml/artifacts/classification/classification_metrics.json
+!ml/artifacts/classification/classification_metrics_evaluated.json
 ml/artifacts/segmentation/*
 ml/artifacts/dataset_validation_report.json
 *.log

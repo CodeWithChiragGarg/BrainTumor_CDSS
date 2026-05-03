@@ -1,7 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import MetricCard from "@/components/MetricCard";
@@ -11,12 +10,18 @@ import { toAbsoluteUrl } from "@/lib/assets";
 import { CompareScansResponse } from "@/lib/types";
 
 export default function ComparisonPage() {
-  const search = useSearchParams();
-  const patientIdFromQuery = search.get("patient_id") ?? "";
-  const previousScanFromQuery = search.get("previous_scan_id") ?? "";
+  const [patientIdFromQuery, setPatientIdFromQuery] = useState("");
+  const [previousScanFromQuery, setPreviousScanFromQuery] = useState("");
   const [result, setResult] = useState<CompareScansResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setPatientIdFromQuery(params.get("patient_id") ?? "");
+    setPreviousScanFromQuery(params.get("previous_scan_id") ?? "");
+  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,7 +37,7 @@ export default function ComparisonPage() {
     };
 
     try {
-      const res = await api.post<CompareScansResponse>("/compare-scans", payload);
+      const res = await api.post<CompareScansResponse>("/api/scans/compare", payload);
       setResult(res.data);
     } catch {
       setError("Comparison failed. Check patient/scan IDs.");

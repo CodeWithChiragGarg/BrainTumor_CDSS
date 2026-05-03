@@ -26,6 +26,7 @@ def get_model_metrics(db: Session = Depends(get_db)):
 
     for single_file in [
         Path("ml/artifacts/classification/classification_metrics.json"),
+        Path("ml/artifacts/classification/classification_metrics_evaluated.json"),
         Path("ml/artifacts/segmentation/segmentation_metrics.json"),
         Path("ml/artifacts/segmentation/segmentation_eval_metrics.json"),
     ]:

@@ -24,6 +24,18 @@ from torchvision import datasets, transforms
 from ml.classification.train import build_model
 
 
+def _display_name(model_name: str) -> str:
+    key = model_name.lower()
+    mapping = {
+        "resnext101_32x8d": "ResNeXt101_32x8d",
+        "resnet50": "ResNet50",
+        "densenet121": "DenseNet121",
+        "efficientnet_b3": "EfficientNet-B3",
+        "convnext_tiny": "ConvNeXt-Tiny",
+    }
+    return mapping.get(key, model_name)
+
+
 def evaluate(config_path: str):
     cfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
     out_dir = Path(cfg["artifacts"]["output_dir"])
@@ -110,6 +122,35 @@ def evaluate(config_path: str):
     plt.close()
 
     (out_dir / "classification_eval_metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+
+    # Also publish a backend-ready metrics row using evaluated scores (incl. AUC)
+    # while preserving training-time metadata if available.
+    training_metrics_path = out_dir / cfg["artifacts"]["metrics_json"]
+    training_payload: dict = {}
+    if training_metrics_path.exists():
+        try:
+            training_payload = json.loads(training_metrics_path.read_text(encoding="utf-8"))
+        except Exception:
+            training_payload = {}
+
+    backend_row = {
+        "model_name": _display_name(model_name),
+        "task_type": "classification",
+        "accuracy": metrics["accuracy"],
+        "precision": metrics["precision_macro"],
+        "recall": metrics["recall_macro"],
+        "f1_score": metrics["f1_macro"],
+        "auc": metrics.get("roc_auc_ovr_macro"),
+        "training_time": training_payload.get("training_time"),
+        "inference_time": training_payload.get("inference_time"),
+        "model_size": training_payload.get("model_size"),
+        "best_use_case": training_payload.get(
+            "best_use_case",
+            "Mentor-recommended backbone tuned with transfer learning and macro-F1 priority.",
+        ),
+        "note": "Actual evaluated metrics from classification evaluation script.",
+    }
+    (out_dir / "classification_metrics_evaluated.json").write_text(json.dumps(backend_row, indent=2), encoding="utf-8")
     print(json.dumps(metrics, indent=2))
 
 

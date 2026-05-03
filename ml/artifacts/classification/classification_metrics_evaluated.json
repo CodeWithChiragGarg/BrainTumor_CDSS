@@ -1,0 +1,14 @@
+{
+  "model_name": "ResNeXt101_32x8d",
+  "task_type": "classification",
+  "accuracy": 0.5116483516483517,
+  "precision": 0.4126057331796707,
+  "recall": 0.49440321861348013,
+  "f1_score": 0.42693103724633985,
+  "auc": 0.6775380258320178,
+  "training_time": 13637.660567500163,
+  "inference_time": 0.3366117998957634,
+  "model_size": 339.91067123413086,
+  "best_use_case": "Mentor-recommended backbone tuned with transfer learning and macro-F1 priority.",
+  "note": "Actual evaluated metrics from classification evaluation script."
+}

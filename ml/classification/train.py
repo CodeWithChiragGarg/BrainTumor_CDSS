@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 import argparse
+import copy
 import json
 import random
 import time
@@ -28,6 +29,17 @@ class EpochStats:
     precision: float
     recall: float
     f1: float
+
+
+def _display_name(model_name: str) -> str:
+    mapping = {
+        "resnext101_32x8d": "ResNeXt101_32x8d",
+        "resnet50": "ResNet50",
+        "densenet121": "DenseNet121",
+        "efficientnet_b3": "EfficientNet-B3",
+        "convnext_tiny": "ConvNeXt-Tiny",
+    }
+    return mapping.get(model_name.lower(), model_name)
 
 
 def set_seed(seed: int) -> None:
@@ -323,6 +335,7 @@ def main(config_path: str, args: argparse.Namespace | None = None):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_name = cfg["training"]["model_name"].lower()
+    model_display_name = _display_name(model_name)
     model = build_model(model_name, num_classes=len(classes), dropout=cfg["training"]["dropout"]).to(device)
 
     print(
@@ -369,9 +382,12 @@ def main(config_path: str, args: argparse.Namespace | None = None):
 
         if va.f1 > best_f1:
             best_f1 = va.f1
-            best_state = model.state_dict()
+            best_state = copy.deepcopy(model.state_dict())
             bad_epochs = 0
-            torch.save({"model_name": model_name, "classes": classes, "state_dict": model.state_dict()}, out_dir / cfg["artifacts"]["best_model_name"])
+            torch.save(
+                {"model_name": model_display_name, "classes": classes, "state_dict": model.state_dict()},
+                out_dir / cfg["artifacts"]["best_model_name"],
+            )
         else:
             bad_epochs += 1
 
@@ -407,9 +423,12 @@ def main(config_path: str, args: argparse.Namespace | None = None):
 
         if va.f1 > best_f1:
             best_f1 = va.f1
-            best_state = model.state_dict()
+            best_state = copy.deepcopy(model.state_dict())
             bad_epochs = 0
-            torch.save({"model_name": model_name, "classes": classes, "state_dict": model.state_dict()}, out_dir / cfg["artifacts"]["best_model_name"])
+            torch.save(
+                {"model_name": model_display_name, "classes": classes, "state_dict": model.state_dict()},
+                out_dir / cfg["artifacts"]["best_model_name"],
+            )
         else:
             bad_epochs += 1
 
@@ -438,7 +457,7 @@ def main(config_path: str, args: argparse.Namespace | None = None):
         model.load_state_dict(best_state)
 
     best_path = out_dir / cfg["artifacts"]["best_model_name"]
-    torch.save({"model_name": model_name, "classes": classes, "state_dict": model.state_dict()}, best_path)
+    torch.save({"model_name": model_display_name, "classes": classes, "state_dict": model.state_dict()}, best_path)
 
     val_final = run_epoch(model, val_loader, criterion, optimizer, scaler, device, train=False)
 
@@ -452,7 +471,7 @@ def main(config_path: str, args: argparse.Namespace | None = None):
     model_size_mb = best_path.stat().st_size / (1024 * 1024)
 
     metrics_payload = {
-        "model_name": model_name,
+        "model_name": model_display_name,
         "task_type": "classification",
         "accuracy": val_final.accuracy,
         "precision": val_final.precision,
@@ -462,6 +481,7 @@ def main(config_path: str, args: argparse.Namespace | None = None):
         "training_time": elapsed,
         "inference_time": inference_time,
         "model_size": model_size_mb,
+        "best_use_case": "Mentor-recommended backbone tuned with transfer learning and macro-F1 priority.",
         "note": "Actual metrics generated from current run.",
     }
 
