@@ -1,7 +1,5 @@
 # Brain MRI Tumor AI Platform
 
-**Project made by Shagun Talwar**
-
 An advanced academic/research prototype for AI-assisted Brain MRI tumor detection, segmentation, classification, longitudinal progression analysis, explainable AI (Grad-CAM), RAG-grounded patient-history summaries, and professional PDF report generation.
 
 ## Medical Disclaimer
