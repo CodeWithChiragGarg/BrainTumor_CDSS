@@ -388,4 +388,6 @@ Add screenshots here for final demo:
 ---
 
 ### Attribution
-**Project made by Shagun Talwar**
+## Project By
+- Shagun Talwar  
+- Chirag Garg
