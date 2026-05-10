@@ -1,6 +1,6 @@
 # API Documentation
 
-Project made by Shagun Talwar
+Project made by Shagun Talwar and co-developed by Chirag Garg
 
 Base URL (local): `http://127.0.0.1:8000`
 
