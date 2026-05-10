@@ -1,6 +1,6 @@
 # PDF Report Format
 
-Project made by Shagun Talwar
+Project made by Shagun Talwar and co-developed by Chirag Garg
 
 ## Header
 - Title: AI-Assisted Brain MRI Tumor Analysis Report
@@ -30,4 +30,4 @@ Project made by Shagun Talwar
 
 ## Footer
 - Page number
-- Project made by Shagun Talwar
+- Project made by Shagun Talwar and co-developed by Chirag Garg
