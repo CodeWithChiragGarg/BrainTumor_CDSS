@@ -1,6 +1,6 @@
 # Demo Flow (Presentation Script)
 
-Project made by Shagun Talwar
+Project made by Shagun Talwar and co-developed by Chirag Garg
 
 1. Open landing page and explain the project objective: AI-assisted brain MRI analysis prototype.
 2. Show the left sidebar navigation (Home, Upload MRI Image, Patient History, Compare Reports, Awareness, Report Download).
